@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0e0e0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>IPTV Abonnement Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e0f;
+    --surface: #18181b;
+    --surface2: #222226;
+    --border: #2e2e34;
+    --accent: #00e5a0;
+    --accent-dim: rgba(0,229,160,0.08);
+    --text: #f0f0f2;
+    --muted: #7a7a85;
+    --danger: #ff5c5c;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem 3rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .container { width: 100%; max-width: 680px; }
+
+  @media (max-width: 480px) {
+    body { padding: 1.25rem 0.875rem 2.5rem; }
+  }
+
+  .header { margin-bottom: 2.5rem; }
+
+  .badge {
+    display: inline-block;
+    background: var(--accent-dim);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(0,229,160,0.2);
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    color: var(--text);
+  }
+
+  h1 span { color: var(--accent); font-weight: 500; }
+
+  .subtitle {
+    margin-top: 8px;
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.75rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 1.25rem; border-radius: 12px; }
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .field { margin-bottom: 1.25rem; }
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 7px;
+    font-weight: 400;
+  }
+
+  input[type=text] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 16px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+    min-height: 48px;
+  }
+
+  input[type=text]:focus { border-color: var(--accent); }
+
+  /* Language selector */
+  .lang-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+
+  .lang-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 6px;
+    min-height: 64px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    -webkit-appearance: none;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .lang-btn:hover { border-color: var(--accent); color: var(--text); }
+  .lang-btn:active { opacity: 0.75; transform: scale(0.97); }
+  .lang-btn.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .lang-btn .flag { font-size: 22px; display: block; margin-bottom: 4px; }
+  .lang-btn .lang-name { font-size: 12px; display: block; }
+
+  /* Period selector */
+  .periode-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  @media (max-width: 360px) {
+    .periode-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .periode-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 6px;
+    min-height: 60px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--muted);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    -webkit-appearance: none;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .periode-btn:hover { border-color: var(--accent); color: var(--text); }
+  .periode-btn:active { opacity: 0.75; transform: scale(0.97); }
+  .periode-btn.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .periode-btn .months { font-size: 18px; font-weight: 500; display: block; }
+  .periode-btn .plabel { font-size: 11px; margin-top: 2px; display: block; }
+
+  .btn-generate {
+    width: 100%;
+    background: var(--accent);
+    color: #0a1a14;
+    border: none;
+    border-radius: 10px;
+    padding: 16px;
+    min-height: 52px;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    margin-top: 0.5rem;
+    -webkit-appearance: none;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .btn-generate:hover { opacity: 0.88; }
+  .btn-generate:active { transform: scale(0.98); opacity: 0.8; }
+
+  .output-section { display: none; }
+
+  .output-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.85;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  @media (max-width: 480px) {
+    .output-box { font-size: 12px; padding: 1rem; }
+  }
+
+  .output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .output-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .btn-copy {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    min-height: 44px;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    -webkit-appearance: none;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .btn-copy:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-copy:active { opacity: 0.7; }
+  .btn-copy.copied { border-color: var(--accent); color: var(--accent); }
+
+  .error {
+    background: rgba(255,92,92,0.08);
+    border: 1px solid rgba(255,92,92,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--danger);
+    margin-top: 0.75rem;
+    display: none;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.5rem 0;
+  }
+
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2rem;
+    opacity: 0.5;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="badge">IPTV Tool</div>
+    <h1>Abonnement <span>Generator</span></h1>
+    <p class="subtitle" id="ui-subtitle">Selecteer taal, periode en vul de M3U link in.</p>
+  </div>
+
+  <div class="card">
+    <p class="card-title" id="ui-lang-title">Taal / Language</p>
+    <div class="lang-grid">
+      <button class="lang-btn active" data-lang="nl" onclick="selectLang(this)">
+        <span class="flag">🇳🇱</span>
+        <span class="lang-name">Nederlands</span>
+      </button>
+      <button class="lang-btn" data-lang="de" onclick="selectLang(this)">
+        <span class="flag">🇩🇪</span>
+        <span class="lang-name">Deutsch</span>
+      </button>
+      <button class="lang-btn" data-lang="es" onclick="selectLang(this)">
+        <span class="flag">🇪🇸</span>
+        <span class="lang-name">Español</span>
+      </button>
+    </div>
+
+    <p class="card-title" id="ui-config-title">Configuratie</p>
+
+    <div class="field">
+      <label id="ui-periode-label">Periode</label>
+      <div class="periode-grid">
+        <button class="periode-btn" data-months="3" onclick="selectPeriode(this)">
+          <span class="months">3</span>
+          <span class="plabel" id="p3-label">maanden</span>
+        </button>
+        <button class="periode-btn" data-months="6" onclick="selectPeriode(this)">
+          <span class="months">6</span>
+          <span class="plabel" id="p6-label">maanden</span>
+        </button>
+        <button class="periode-btn" data-months="12" onclick="selectPeriode(this)">
+          <span class="months">12</span>
+          <span class="plabel" id="p12-label">maanden</span>
+        </button>
+        <button class="periode-btn active" data-months="15" onclick="selectPeriode(this)">
+          <span class="months">15</span>
+          <span class="plabel">VIP (+3)</span>
+        </button>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="field">
+      <label id="ui-m3u-label">M3U Link</label>
+      <input type="text" id="m3u" placeholder="http://iptvtotaal.stream/get.php?username=...&password=...&type=m3u_plus&output=ts" />
+    </div>
+
+    <div class="error" id="error"></div>
+
+    <button class="btn-generate" id="ui-generate-btn" onclick="generate()">Genereer bericht</button>
+  </div>
+
+  <div class="output-section" id="output-section">
+    <div class="card">
+      <div class="output-header">
+        <span class="output-label" id="ui-output-label">Gegenereerd bericht</span>
+        <button class="btn-copy" id="copy-btn" onclick="copyText()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span id="ui-copy-text">Kopieer</span>
+        </button>
+      </div>
+      <div class="output-box" id="output"></div>
+    </div>
+  </div>
+
+  <p class="footer" id="ui-footer">Lokaal hulpmiddel — geen data wordt verzonden</p>
+</div>
+
+<script>
+  let selectedMonths = 15;
+  let selectedLang = 'nl';
+
+  const translations = {
+    nl: {
+      subtitle: 'Selecteer taal, periode en vul de M3U link in.',
+      langTitle: 'Taal / Language',
+      configTitle: 'Configuratie',
+      periodeLabel: 'Periode',
+      monthWord: 'maanden',
+      m3uLabel: 'M3U Link',
+      generateBtn: 'Genereer bericht',
+      outputLabel: 'Gegenereerd bericht',
+      copyText: 'Kopieer',
+      copiedText: 'Gekopieerd!',
+      footer: 'Lokaal hulpmiddel — geen data wordt verzonden',
+      errorEmpty: 'Vul de M3U link in.',
+      errorInvalid: 'Ongeldige M3U link. Controleer het formaat.',
+      vipLabel: (m) => `${m} maanden VIP`,
+      monthLabel: (m) => `${m} maanden`,
+      message: (label, expiry, domain, username, password, m3u) =>
+`Je abonnement bij ons voor ${label} is geactiveerd: de vervaldatum is ${expiry}
+
+Je kunt onze abonnementen gebruiken in verschillende app-player (iboplayer ,hotplayer,smarters pro , ibo xplayer, airplayer iptv....).
+
+Wij leveren het abonnement (tv,films,series)  (Wij leveren de app-speler niet bij het abonnement. ) , niet de app-player !+++++.
+
+Hier vindt u de inloggegevens voor uw abonnement:
+
+XTREAM-CODES-FORMAAT
+Domain:
+${domain}
+Username:
+${username}
+Password:
+${password}
+
+---M3U-Link-formaat
+${m3u}
+
+=>  Je kunt dit abonnement op twee of drie apparaten gebruiken, maar niet  tegelijkertijd. Onze support staat 24/7 voor je klaar. Aarzel niet om ons vragen te stellen en veel kijkplezier!`
+    },
+
+    de: {
+      subtitle: 'Sprache, Zeitraum wählen und M3U-Link eingeben.',
+      langTitle: 'Sprache / Language',
+      configTitle: 'Konfiguration',
+      periodeLabel: 'Zeitraum',
+      monthWord: 'Monate',
+      m3uLabel: 'M3U Link',
+      generateBtn: 'Nachricht generieren',
+      outputLabel: 'Generierte Nachricht',
+      copyText: 'Kopieren',
+      copiedText: 'Kopiert!',
+      footer: 'Lokales Tool — keine Daten werden gesendet',
+      errorEmpty: 'Bitte M3U-Link eingeben.',
+      errorInvalid: 'Ungültiger M3U-Link. Bitte Format prüfen.',
+      vipLabel: (m) => `${m} Monate VIP`,
+      monthLabel: (m) => `${m} Monate`,
+      message: (label, expiry, domain, username, password, m3u) =>
+`Ihr Abonnement bei uns für ${label} wurde aktiviert: Das Ablaufdatum ist ${expiry}
+
+Sie können unsere Abonnements in verschiedenen App-Playern verwenden (iboplayer, hotplayer, smarters pro, ibo xplayer, airplayer iptv....).
+
+Wir liefern das Abonnement (TV, Filme, Serien) (Wir liefern den App-Player nicht mit dem Abonnement.) , nicht den App-Player !+++++.
+
+Hier finden Sie die Anmeldedaten für Ihr Abonnement:
+
+XTREAM-CODES-FORMAT
+Domain:
+${domain}
+Username:
+${username}
+Password:
+${password}
+
+---M3U-Link-Format
+${m3u}
+
+=>  Sie können dieses Abonnement auf zwei oder drei Geräten verwenden, aber nicht gleichzeitig. Unser Support ist 24/7 für Sie da. Zögern Sie nicht, uns Fragen zu stellen und viel Spaß beim Schauen!`
+    },
+
+    es: {
+      subtitle: 'Selecciona idioma, periodo e introduce el enlace M3U.',
+      langTitle: 'Idioma / Language',
+      configTitle: 'Configuración',
+      periodeLabel: 'Periodo',
+      monthWord: 'meses',
+      m3uLabel: 'Enlace M3U',
+      generateBtn: 'Generar mensaje',
+      outputLabel: 'Mensaje generado',
+      copyText: 'Copiar',
+      copiedText: '¡Copiado!',
+      footer: 'Herramienta local — no se envían datos',
+      errorEmpty: 'Por favor introduce el enlace M3U.',
+      errorInvalid: 'Enlace M3U no válido. Comprueba el formato.',
+      vipLabel: (m) => `${m} meses VIP`,
+      monthLabel: (m) => `${m} meses`,
+      message: (label, expiry, domain, username, password, m3u) =>
+`Tu suscripción con nosotros por ${label} ha sido activada: la fecha de vencimiento es ${expiry}
+
+Puedes usar nuestras suscripciones en diferentes reproductores de aplicaciones (iboplayer, hotplayer, smarters pro, ibo xplayer, airplayer iptv....).
+
+Nosotros proporcionamos la suscripción (tv, películas, series) (No proporcionamos el reproductor de aplicaciones con la suscripción.) , ¡no el reproductor de aplicaciones!+++++.
+
+Aquí encontrarás las credenciales de acceso para tu suscripción:
+
+FORMATO-XTREAM-CODES
+Domain:
+${domain}
+Username:
+${username}
+Password:
+${password}
+
+---Formato-Enlace-M3U
+${m3u}
+
+=>  Puedes usar esta suscripción en dos o tres dispositivos, pero no simultáneamente. Nuestro soporte está disponible 24/7. ¡No dudes en hacernos preguntas y que disfrutes viendo!`
+    }
+  };
+
+  function selectLang(btn) {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedLang = btn.dataset.lang;
+    updateUI();
+  }
+
+  function updateUI() {
+    const t = translations[selectedLang];
+    document.getElementById('ui-subtitle').textContent = t.subtitle;
+    document.getElementById('ui-lang-title').textContent = t.langTitle;
+    document.getElementById('ui-config-title').textContent = t.configTitle;
+    document.getElementById('ui-periode-label').textContent = t.periodeLabel;
+    document.getElementById('ui-m3u-label').textContent = t.m3uLabel;
+    document.getElementById('ui-generate-btn').textContent = t.generateBtn;
+    document.getElementById('ui-output-label').textContent = t.outputLabel;
+    document.getElementById('ui-copy-text').textContent = t.copyText;
+    document.getElementById('ui-footer').textContent = t.footer;
+    document.getElementById('p3-label').textContent = t.monthWord;
+    document.getElementById('p6-label').textContent = t.monthWord;
+    document.getElementById('p12-label').textContent = t.monthWord;
+    // hide output when language changes
+    document.getElementById('output-section').style.display = 'none';
+    document.getElementById('error').style.display = 'none';
+  }
+
+  function selectPeriode(btn) {
+    document.querySelectorAll('.periode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedMonths = parseInt(btn.dataset.months);
+  }
+
+  function parseM3U(url) {
+    try {
+      const u = new URL(url.trim());
+      const username = u.searchParams.get('username') || '';
+      const password = u.searchParams.get('password') || '';
+      const domain = u.hostname;
+      return { domain, username, password };
+    } catch {
+      return null;
+    }
+  }
+
+  function getExpiryDate(months) {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    d.setMonth(d.getMonth() + months);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function getPeriodeLabel(months) {
+    const t = translations[selectedLang];
+    if (months === 15) return t.vipLabel(15);
+    return t.monthLabel(months);
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function hideError() {
+    document.getElementById('error').style.display = 'none';
+  }
+
+  function generate() {
+    hideError();
+    const t = translations[selectedLang];
+    const m3u = document.getElementById('m3u').value.trim();
+
+    if (!m3u) { showError(t.errorEmpty); return; }
+
+    const parsed = parseM3U(m3u);
+    if (!parsed || !parsed.username) { showError(t.errorInvalid); return; }
+
+    const { domain, username, password } = parsed;
+    const expiry = getExpiryDate(selectedMonths);
+    const label = getPeriodeLabel(selectedMonths);
+    const msg = t.message(label, expiry, domain, username, password, m3u);
+
+    document.getElementById('output').textContent = msg;
+    const section = document.getElementById('output-section');
+    section.style.display = 'block';
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    resetCopyBtn();
+  }
+
+  function resetCopyBtn() {
+    const t = translations[selectedLang];
+    const btn = document.getElementById('copy-btn');
+    btn.classList.remove('copied');
+    document.getElementById('ui-copy-text').textContent = t.copyText;
+  }
+
+  function copyText() {
+    const t = translations[selectedLang];
+    const text = document.getElementById('output').textContent;
+
+    function onCopied() {
+      const btn = document.getElementById('copy-btn');
+      btn.classList.add('copied');
+      document.getElementById('ui-copy-text').textContent = t.copiedText;
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        document.getElementById('ui-copy-text').textContent = t.copyText;
+      }, 2500);
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(onCopied).catch(() => fallbackCopy(text, onCopied));
+    } else {
+      fallbackCopy(text, onCopied);
+    }
+  }
+
+  function fallbackCopy(text, onCopied) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try {
+      document.execCommand('copy');
+      onCopied();
+    } catch (e) {}
+    document.body.removeChild(ta);
+  }
+</script>
+</body>
+</html>
