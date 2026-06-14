@@ -348,8 +348,12 @@ input[type=text]:focus { border-color: var(--accent); }
 /* ─── SUBS GRID ──────────────────────────────────── */
 .subs-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
+}
+
+@media (max-width: 360px) {
+  .subs-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 .subs-btn {
@@ -674,6 +678,10 @@ footer {
           <span class="subs-num">3</span>
           <span class="subs-lbl" id="s3-label">abonnementen</span>
         </button>
+        <button class="subs-btn" data-subs="4" onclick="selectSubs(this)">
+          <span class="subs-num">4</span>
+          <span class="subs-lbl" id="s4-label">abonnementen</span>
+        </button>
       </div>
     </div>
 
@@ -694,6 +702,12 @@ footer {
     <div class="field" id="m3u3-field" style="display:none">
       <label id="ui-m3u3-label">M3U Link 3</label>
       <input type="text" id="m3u3" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+        placeholder="http://domain.com/get.php?username=...&password=...&type=m3u_plus" />
+    </div>
+
+    <div class="field" id="m3u4-field" style="display:none">
+      <label id="ui-m3u4-label">M3U Link 4</label>
+      <input type="text" id="m3u4" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
         placeholder="http://domain.com/get.php?username=...&password=...&type=m3u_plus" />
     </div>
 
@@ -740,13 +754,14 @@ footer {
       subWord:   (n) => n === 1 ? 'abonnement' : 'abonnementen',
       deviceLine:(n) => n === 1
         ? 'Je kunt dit abonnement op één apparaat gebruiken.'
-        : `Je kunt dit abonnement op ${n === 2 ? 'twee' : 'drie'} apparaten gebruiken, maar niet tegelijkertijd.`,
+        : `Je kunt dit abonnement op ${{2:'twee',3:'drie',4:'vier'}[n]} apparaten gebruiken, maar niet tegelijkertijd.`,
       xtreamLabel:    'XTREAM-CODES-FORMAAT',
       m3uFormatLabel: '---M3U-Link-formaat',
       subHeader:  (n) => `--- Abonnement ${n} ---`,
       m3uLabel:   'M3U Link',
       m3uLabel2:  'M3U Link 2',
       m3uLabel3:  'M3U Link 3',
+      m3uLabel4:  'M3U Link 4',
       generateBtn: 'Genereer bericht',
       outputLabel: 'Gegenereerd bericht',
       copyText:    'Kopieer',
@@ -756,8 +771,10 @@ footer {
       errorInvalid:  'Ongeldige M3U link. Controleer het formaat.',
       errorEmpty2:   'Vul de 2e M3U link in.',
       errorEmpty3:   'Vul de 3e M3U link in.',
+      errorEmpty4:   'Vul de 4e M3U link in.',
       errorInvalid2: 'Ongeldige 2e M3U link. Controleer het formaat.',
       errorInvalid3: 'Ongeldige 3e M3U link. Controleer het formaat.',
+      errorInvalid4: 'Ongeldige 4e M3U link. Controleer het formaat.',
       vipLabel:  (m) => `${m} maanden VIP`,
       monthLabel:(m) => `${m} maanden`,
       message: (label, expiry, credsBlock, subs) =>
@@ -783,13 +800,14 @@ ${credsBlock}
       subWord:   (n) => n === 1 ? 'Abonnement' : 'Abonnements',
       deviceLine:(n) => n === 1
         ? 'Sie können dieses Abonnement auf einem Gerät verwenden.'
-        : `Sie können dieses Abonnement auf ${n === 2 ? 'zwei' : 'drei'} Geräten verwenden, aber nicht gleichzeitig.`,
+        : `Sie können dieses Abonnement auf ${{2:'zwei',3:'drei',4:'vier'}[n]} Geräten verwenden, aber nicht gleichzeitig.`,
       xtreamLabel:    'XTREAM-CODES-FORMAT',
       m3uFormatLabel: '---M3U-Link-Format',
       subHeader:  (n) => `--- Abonnement ${n} ---`,
       m3uLabel:   'M3U Link',
       m3uLabel2:  'M3U Link 2',
       m3uLabel3:  'M3U Link 3',
+      m3uLabel4:  'M3U Link 4',
       generateBtn: 'Nachricht generieren',
       outputLabel: 'Generierte Nachricht',
       copyText:    'Kopieren',
@@ -799,8 +817,10 @@ ${credsBlock}
       errorInvalid:  'Ungültiger M3U-Link. Bitte Format prüfen.',
       errorEmpty2:   'Bitte 2. M3U-Link eingeben.',
       errorEmpty3:   'Bitte 3. M3U-Link eingeben.',
+      errorEmpty4:   'Bitte 4. M3U-Link eingeben.',
       errorInvalid2: 'Ungültiger 2. M3U-Link. Bitte Format prüfen.',
       errorInvalid3: 'Ungültiger 3. M3U-Link. Bitte Format prüfen.',
+      errorInvalid4: 'Ungültiger 4. M3U-Link. Bitte Format prüfen.',
       vipLabel:  (m) => `${m} Monate VIP`,
       monthLabel:(m) => `${m} Monate`,
       message: (label, expiry, credsBlock, subs) =>
@@ -826,13 +846,14 @@ ${credsBlock}
       subWord:   (n) => n === 1 ? 'suscripción' : 'suscripciones',
       deviceLine:(n) => n === 1
         ? 'Puedes usar esta suscripción en un dispositivo.'
-        : `Puedes usar esta suscripción en ${n === 2 ? 'dos' : 'tres'} dispositivos, pero no simultáneamente.`,
+        : `Puedes usar esta suscripción en ${{2:'dos',3:'tres',4:'cuatro'}[n]} dispositivos, pero no simultáneamente.`,
       xtreamLabel:    'FORMATO-XTREAM-CODES',
       m3uFormatLabel: '---Formato-Enlace-M3U',
       subHeader:  (n) => `--- Suscripción ${n} ---`,
       m3uLabel:   'Enlace M3U',
       m3uLabel2:  'Enlace M3U 2',
       m3uLabel3:  'Enlace M3U 3',
+      m3uLabel4:  'Enlace M3U 4',
       generateBtn: 'Generar mensaje',
       outputLabel: 'Mensaje generado',
       copyText:    'Copiar',
@@ -842,8 +863,10 @@ ${credsBlock}
       errorInvalid:  'Enlace M3U no válido. Comprueba el formato.',
       errorEmpty2:   'Por favor introduce el 2.º enlace M3U.',
       errorEmpty3:   'Por favor introduce el 3.º enlace M3U.',
+      errorEmpty4:   'Por favor introduce el 4.º enlace M3U.',
       errorInvalid2: '2.º enlace M3U no válido.',
       errorInvalid3: '3.º enlace M3U no válido.',
+      errorInvalid4: '4.º enlace M3U no válido.',
       vipLabel:  (m) => `${m} meses VIP`,
       monthLabel:(m) => `${m} meses`,
       message: (label, expiry, credsBlock, subs) =>
@@ -869,13 +892,14 @@ ${credsBlock}
       subWord:   (n) => 'abonnemang',
       deviceLine:(n) => n === 1
         ? 'Du kan använda det här abonnemanget på en enhet.'
-        : `Du kan använda det här abonnemanget på ${n === 2 ? 'två' : 'tre'} enheter, men inte samtidigt.`,
+        : `Du kan använda det här abonnemanget på ${{2:'två',3:'tre',4:'fyra'}[n]} enheter, men inte samtidigt.`,
       xtreamLabel:    'XTREAM-CODES-FORMAT',
       m3uFormatLabel: '---M3U-Länk-format',
       subHeader:  (n) => `--- Abonnemang ${n} ---`,
       m3uLabel:   'M3U-länk',
       m3uLabel2:  'M3U-länk 2',
       m3uLabel3:  'M3U-länk 3',
+      m3uLabel4:  'M3U-länk 4',
       generateBtn: 'Generera meddelande',
       outputLabel: 'Genererat meddelande',
       copyText:    'Kopiera',
@@ -885,8 +909,10 @@ ${credsBlock}
       errorInvalid:  'Ogiltig M3U-länk. Kontrollera formatet.',
       errorEmpty2:   'Ange den 2:a M3U-länken.',
       errorEmpty3:   'Ange den 3:e M3U-länken.',
+      errorEmpty4:   'Ange den 4:e M3U-länken.',
       errorInvalid2: 'Ogiltig 2:a M3U-länk.',
       errorInvalid3: 'Ogiltig 3:e M3U-länk.',
+      errorInvalid4: 'Ogiltig 4:e M3U-länk.',
       vipLabel:  (m) => `${m} månader VIP`,
       monthLabel:(m) => `${m} månader`,
       message: (label, expiry, credsBlock, subs) =>
@@ -912,13 +938,14 @@ ${credsBlock}
       subWord:   (n) => n === 1 ? 'abonnement' : 'abonnements',
       deviceLine:(n) => n === 1
         ? 'Vous pouvez utiliser cet abonnement sur un appareil.'
-        : `Vous pouvez utiliser cet abonnement sur ${n === 2 ? 'deux' : 'trois'} appareils, mais pas simultanément.`,
+        : `Vous pouvez utiliser cet abonnement sur ${{2:'deux',3:'trois',4:'quatre'}[n]} appareils, mais pas simultanément.`,
       xtreamLabel:    'FORMAT-XTREAM-CODES',
       m3uFormatLabel: '---Format-Lien-M3U',
       subHeader:  (n) => `--- Abonnement ${n} ---`,
       m3uLabel:   'Lien M3U',
       m3uLabel2:  'Lien M3U 2',
       m3uLabel3:  'Lien M3U 3',
+      m3uLabel4:  'Lien M3U 4',
       generateBtn: 'Générer le message',
       outputLabel: 'Message généré',
       copyText:    'Copier',
@@ -928,8 +955,10 @@ ${credsBlock}
       errorInvalid:  'Lien M3U invalide. Vérifiez le format.',
       errorEmpty2:   'Veuillez entrer le 2e lien M3U.',
       errorEmpty3:   'Veuillez entrer le 3e lien M3U.',
+      errorEmpty4:   'Veuillez entrer le 4e lien M3U.',
       errorInvalid2: '2e lien M3U invalide.',
       errorInvalid3: '3e lien M3U invalide.',
+      errorInvalid4: '4e lien M3U invalide.',
       vipLabel:  (m) => `${m} mois VIP`,
       monthLabel:(m) => `${m} mois`,
       message: (label, expiry, credsBlock, subs) =>
@@ -955,13 +984,14 @@ ${credsBlock}
       subWord:   (n) => n === 1 ? 'subscription' : 'subscriptions',
       deviceLine:(n) => n === 1
         ? 'You can use this subscription on one device.'
-        : `You can use this subscription on ${n === 2 ? 'two' : 'three'} devices, but not simultaneously.`,
+        : `You can use this subscription on ${{2:'two',3:'three',4:'four'}[n]} devices, but not simultaneously.`,
       xtreamLabel:    'XTREAM-CODES-FORMAT',
       m3uFormatLabel: '---M3U-Link-format',
       subHeader:  (n) => `--- Subscription ${n} ---`,
       m3uLabel:   'M3U Link',
       m3uLabel2:  'M3U Link 2',
       m3uLabel3:  'M3U Link 3',
+      m3uLabel4:  'M3U Link 4',
       generateBtn: 'Generate message',
       outputLabel: 'Generated message',
       copyText:    'Copy',
@@ -971,8 +1001,10 @@ ${credsBlock}
       errorInvalid:  'Invalid M3U link. Please check the format.',
       errorEmpty2:   'Please enter the 2nd M3U link.',
       errorEmpty3:   'Please enter the 3rd M3U link.',
+      errorEmpty4:   'Please enter the 4th M3U link.',
       errorInvalid2: 'Invalid 2nd M3U link.',
       errorInvalid3: 'Invalid 3rd M3U link.',
+      errorInvalid4: 'Invalid 4th M3U link.',
       vipLabel:  (m) => `${m} months VIP`,
       monthLabel:(m) => `${m} months`,
       message: (label, expiry, credsBlock, subs) =>
@@ -1009,6 +1041,8 @@ ${credsBlock}
     document.getElementById('ui-m3u-label').textContent     = t.m3uLabel;
     document.getElementById('ui-m3u2-label').textContent    = t.m3uLabel2;
     document.getElementById('ui-m3u3-label').textContent    = t.m3uLabel3;
+    document.getElementById('ui-m3u4-label').textContent    = t.m3uLabel4;
+    document.getElementById('s4-label').textContent         = t.subWord(4);
     document.getElementById('ui-generate-btn').textContent  = t.generateBtn;
     document.getElementById('ui-output-label').textContent  = t.outputLabel;
     document.getElementById('ui-copy-text').textContent     = t.copyText;
@@ -1026,6 +1060,7 @@ ${credsBlock}
     selectedSubs = parseInt(btn.dataset.subs);
     document.getElementById('m3u2-field').style.display = selectedSubs >= 2 ? 'block' : 'none';
     document.getElementById('m3u3-field').style.display = selectedSubs >= 3 ? 'block' : 'none';
+    document.getElementById('m3u4-field').style.display = selectedSubs >= 4 ? 'block' : 'none';
   }
 
   function selectPeriode(btn) {
@@ -1108,6 +1143,15 @@ ${credsBlock}
       if (!p3 || !p3.username) { showError(t.errorInvalid3); return; }
       p3.m3u = m3u3Val;
       list.push(p3);
+    }
+
+    if (selectedSubs >= 4) {
+      const m3u4Val = document.getElementById('m3u4').value.trim();
+      if (!m3u4Val) { showError(t.errorEmpty4); return; }
+      const p4 = parseM3U(m3u4Val);
+      if (!p4 || !p4.username) { showError(t.errorInvalid4); return; }
+      p4.m3u = m3u4Val;
+      list.push(p4);
     }
 
     const credsBlock = buildCredsBlock(t, list);
