@@ -345,6 +345,43 @@ input[type=text]:focus { border-color: var(--accent); }
 .lang-btn .flag      { font-size: 24px; display: block; margin-bottom: 5px; }
 .lang-btn .lang-name { font-size: 12px; display: block; }
 
+/* ─── SUBS GRID ──────────────────────────────────── */
+.subs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.subs-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 6px;
+  min-height: 62px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  color: var(--muted);
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  -webkit-appearance: none;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.subs-btn:hover  { border-color: var(--accent); color: var(--text); }
+.subs-btn:active { opacity: 0.7; transform: scale(0.97); }
+.subs-btn.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.subs-btn .subs-num   { font-size: 20px; font-weight: 600; display: block; }
+.subs-btn .subs-lbl   { font-size: 10px; margin-top: 3px; display: block; }
+
 /* ─── PERIOD GRID ─────────────────────────────────── */
 .periode-grid {
   display: grid;
@@ -524,7 +561,7 @@ footer {
     </div>
     <span class="nav-name">IPTV Generator</span>
   </a>
-  <span class="nav-pill">NL · DE · ES</span>
+  <span class="nav-pill">NL · DE · ES · SV · FR · EN</span>
 </nav>
 
 <!-- ── HERO ─────────────────────────────────────────── -->
@@ -584,6 +621,18 @@ footer {
         <span class="flag">🇪🇸</span>
         <span class="lang-name">Español</span>
       </button>
+      <button class="lang-btn" data-lang="sv" onclick="selectLang(this)">
+        <span class="flag">🇸🇪</span>
+        <span class="lang-name">Svenska</span>
+      </button>
+      <button class="lang-btn" data-lang="fr" onclick="selectLang(this)">
+        <span class="flag">🇫🇷</span>
+        <span class="lang-name">Français</span>
+      </button>
+      <button class="lang-btn" data-lang="en" onclick="selectLang(this)">
+        <span class="flag">🇬🇧</span>
+        <span class="lang-name">English</span>
+      </button>
     </div>
 
     <p class="card-title" id="ui-config-title">Configuratie</p>
@@ -610,11 +659,41 @@ footer {
       </div>
     </div>
 
+    <div class="field">
+      <label id="ui-subs-label">Aantal abonnementen</label>
+      <div class="subs-grid">
+        <button class="subs-btn active" data-subs="1" onclick="selectSubs(this)">
+          <span class="subs-num">1</span>
+          <span class="subs-lbl" id="s1-label">abonnement</span>
+        </button>
+        <button class="subs-btn" data-subs="2" onclick="selectSubs(this)">
+          <span class="subs-num">2</span>
+          <span class="subs-lbl" id="s2-label">abonnementen</span>
+        </button>
+        <button class="subs-btn" data-subs="3" onclick="selectSubs(this)">
+          <span class="subs-num">3</span>
+          <span class="subs-lbl" id="s3-label">abonnementen</span>
+        </button>
+      </div>
+    </div>
+
     <hr class="divider">
 
     <div class="field">
       <label id="ui-m3u-label">M3U Link</label>
       <input type="text" id="m3u" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+        placeholder="http://domain.com/get.php?username=...&password=...&type=m3u_plus" />
+    </div>
+
+    <div class="field" id="m3u2-field" style="display:none">
+      <label id="ui-m3u2-label">M3U Link 2</label>
+      <input type="text" id="m3u2" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+        placeholder="http://domain.com/get.php?username=...&password=...&type=m3u_plus" />
+    </div>
+
+    <div class="field" id="m3u3-field" style="display:none">
+      <label id="ui-m3u3-label">M3U Link 3</label>
+      <input type="text" id="m3u3" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
         placeholder="http://domain.com/get.php?username=...&password=...&type=m3u_plus" />
     </div>
 
@@ -649,6 +728,7 @@ footer {
 <script>
   let selectedMonths = 15;
   let selectedLang = 'nl';
+  let selectedSubs = 1;
 
   const translations = {
     nl: {
@@ -656,17 +736,31 @@ footer {
       configTitle:  'Configuratie',
       periodeLabel: 'Periode',
       monthWord:    'maanden',
-      m3uLabel:     'M3U Link',
-      generateBtn:  'Genereer bericht',
-      outputLabel:  'Gegenereerd bericht',
-      copyText:     'Kopieer',
-      copiedText:   'Gekopieerd!',
-      footer:       'Lokaal hulpmiddel — geen data wordt verzonden',
-      errorEmpty:   'Vul de M3U link in.',
-      errorInvalid: 'Ongeldige M3U link. Controleer het formaat.',
+      subsLabel:    'Aantal abonnementen',
+      subWord:   (n) => n === 1 ? 'abonnement' : 'abonnementen',
+      deviceLine:(n) => n === 1
+        ? 'Je kunt dit abonnement op één apparaat gebruiken.'
+        : `Je kunt dit abonnement op ${n === 2 ? 'twee' : 'drie'} apparaten gebruiken, maar niet tegelijkertijd.`,
+      xtreamLabel:    'XTREAM-CODES-FORMAAT',
+      m3uFormatLabel: '---M3U-Link-formaat',
+      subHeader:  (n) => `--- Abonnement ${n} ---`,
+      m3uLabel:   'M3U Link',
+      m3uLabel2:  'M3U Link 2',
+      m3uLabel3:  'M3U Link 3',
+      generateBtn: 'Genereer bericht',
+      outputLabel: 'Gegenereerd bericht',
+      copyText:    'Kopieer',
+      copiedText:  'Gekopieerd!',
+      footer:      'Lokaal hulpmiddel — geen data wordt verzonden',
+      errorEmpty:    'Vul de M3U link in.',
+      errorInvalid:  'Ongeldige M3U link. Controleer het formaat.',
+      errorEmpty2:   'Vul de 2e M3U link in.',
+      errorEmpty3:   'Vul de 3e M3U link in.',
+      errorInvalid2: 'Ongeldige 2e M3U link. Controleer het formaat.',
+      errorInvalid3: 'Ongeldige 3e M3U link. Controleer het formaat.',
       vipLabel:  (m) => `${m} maanden VIP`,
       monthLabel:(m) => `${m} maanden`,
-      message: (label, expiry, domain, username, password, m3u) =>
+      message: (label, expiry, credsBlock, subs) =>
 `Je abonnement bij ons voor ${label} is geactiveerd: de vervaldatum is ${expiry}
 
 Je kunt onze abonnementen gebruiken in verschillende app-player (iboplayer ,hotplayer,smarters pro , ibo xplayer, airplayer iptv....).
@@ -675,18 +769,9 @@ Wij leveren het abonnement (tv,films,series)  (Wij leveren de app-speler niet bi
 
 Hier vindt u de inloggegevens voor uw abonnement:
 
-XTREAM-CODES-FORMAAT
-Domain:
-${domain}
-Username:
-${username}
-Password:
-${password}
+${credsBlock}
 
----M3U-Link-formaat
-${m3u}
-
-=>  Je kunt dit abonnement op twee of drie apparaten gebruiken, maar niet  tegelijkertijd. Onze support staat 24/7 voor je klaar. Aarzel niet om ons vragen te stellen en veel kijkplezier!`
+=>  ${translations.nl.deviceLine(subs)} Onze support staat 24/7 voor je klaar. Aarzel niet om ons vragen te stellen en veel kijkplezier!`
     },
 
     de: {
@@ -694,17 +779,31 @@ ${m3u}
       configTitle:  'Konfiguration',
       periodeLabel: 'Zeitraum',
       monthWord:    'Monate',
-      m3uLabel:     'M3U Link',
-      generateBtn:  'Nachricht generieren',
-      outputLabel:  'Generierte Nachricht',
-      copyText:     'Kopieren',
-      copiedText:   'Kopiert!',
-      footer:       'Lokales Tool — keine Daten werden gesendet',
-      errorEmpty:   'Bitte M3U-Link eingeben.',
-      errorInvalid: 'Ungültiger M3U-Link. Bitte Format prüfen.',
+      subsLabel:    'Anzahl Abonnements',
+      subWord:   (n) => n === 1 ? 'Abonnement' : 'Abonnements',
+      deviceLine:(n) => n === 1
+        ? 'Sie können dieses Abonnement auf einem Gerät verwenden.'
+        : `Sie können dieses Abonnement auf ${n === 2 ? 'zwei' : 'drei'} Geräten verwenden, aber nicht gleichzeitig.`,
+      xtreamLabel:    'XTREAM-CODES-FORMAT',
+      m3uFormatLabel: '---M3U-Link-Format',
+      subHeader:  (n) => `--- Abonnement ${n} ---`,
+      m3uLabel:   'M3U Link',
+      m3uLabel2:  'M3U Link 2',
+      m3uLabel3:  'M3U Link 3',
+      generateBtn: 'Nachricht generieren',
+      outputLabel: 'Generierte Nachricht',
+      copyText:    'Kopieren',
+      copiedText:  'Kopiert!',
+      footer:      'Lokales Tool — keine Daten werden gesendet',
+      errorEmpty:    'Bitte M3U-Link eingeben.',
+      errorInvalid:  'Ungültiger M3U-Link. Bitte Format prüfen.',
+      errorEmpty2:   'Bitte 2. M3U-Link eingeben.',
+      errorEmpty3:   'Bitte 3. M3U-Link eingeben.',
+      errorInvalid2: 'Ungültiger 2. M3U-Link. Bitte Format prüfen.',
+      errorInvalid3: 'Ungültiger 3. M3U-Link. Bitte Format prüfen.',
       vipLabel:  (m) => `${m} Monate VIP`,
       monthLabel:(m) => `${m} Monate`,
-      message: (label, expiry, domain, username, password, m3u) =>
+      message: (label, expiry, credsBlock, subs) =>
 `Ihr Abonnement bei uns für ${label} wurde aktiviert: Das Ablaufdatum ist ${expiry}
 
 Sie können unsere Abonnements in verschiedenen App-Playern verwenden (iboplayer, hotplayer, smarters pro, ibo xplayer, airplayer iptv....).
@@ -713,18 +812,9 @@ Wir liefern das Abonnement (TV, Filme, Serien) (Wir liefern den App-Player nicht
 
 Hier finden Sie die Anmeldedaten für Ihr Abonnement:
 
-XTREAM-CODES-FORMAT
-Domain:
-${domain}
-Username:
-${username}
-Password:
-${password}
+${credsBlock}
 
----M3U-Link-Format
-${m3u}
-
-=>  Sie können dieses Abonnement auf zwei oder drei Geräten verwenden, aber nicht gleichzeitig. Unser Support ist 24/7 für Sie da. Zögern Sie nicht, uns Fragen zu stellen und viel Spaß beim Schauen!`
+=>  ${translations.de.deviceLine(subs)} Unser Support ist 24/7 für Sie da. Zögern Sie nicht, uns Fragen zu stellen und viel Spaß beim Schauen!`
     },
 
     es: {
@@ -732,17 +822,31 @@ ${m3u}
       configTitle:  'Configuración',
       periodeLabel: 'Periodo',
       monthWord:    'meses',
-      m3uLabel:     'Enlace M3U',
-      generateBtn:  'Generar mensaje',
-      outputLabel:  'Mensaje generado',
-      copyText:     'Copiar',
-      copiedText:   '¡Copiado!',
-      footer:       'Herramienta local — no se envían datos',
-      errorEmpty:   'Por favor introduce el enlace M3U.',
-      errorInvalid: 'Enlace M3U no válido. Comprueba el formato.',
+      subsLabel:    'Número de suscripciones',
+      subWord:   (n) => n === 1 ? 'suscripción' : 'suscripciones',
+      deviceLine:(n) => n === 1
+        ? 'Puedes usar esta suscripción en un dispositivo.'
+        : `Puedes usar esta suscripción en ${n === 2 ? 'dos' : 'tres'} dispositivos, pero no simultáneamente.`,
+      xtreamLabel:    'FORMATO-XTREAM-CODES',
+      m3uFormatLabel: '---Formato-Enlace-M3U',
+      subHeader:  (n) => `--- Suscripción ${n} ---`,
+      m3uLabel:   'Enlace M3U',
+      m3uLabel2:  'Enlace M3U 2',
+      m3uLabel3:  'Enlace M3U 3',
+      generateBtn: 'Generar mensaje',
+      outputLabel: 'Mensaje generado',
+      copyText:    'Copiar',
+      copiedText:  '¡Copiado!',
+      footer:      'Herramienta local — no se envían datos',
+      errorEmpty:    'Por favor introduce el enlace M3U.',
+      errorInvalid:  'Enlace M3U no válido. Comprueba el formato.',
+      errorEmpty2:   'Por favor introduce el 2.º enlace M3U.',
+      errorEmpty3:   'Por favor introduce el 3.º enlace M3U.',
+      errorInvalid2: '2.º enlace M3U no válido.',
+      errorInvalid3: '3.º enlace M3U no válido.',
       vipLabel:  (m) => `${m} meses VIP`,
       monthLabel:(m) => `${m} meses`,
-      message: (label, expiry, domain, username, password, m3u) =>
+      message: (label, expiry, credsBlock, subs) =>
 `Tu suscripción con nosotros por ${label} ha sido activada: la fecha de vencimiento es ${expiry}
 
 Puedes usar nuestras suscripciones en diferentes reproductores de aplicaciones (iboplayer, hotplayer, smarters pro, ibo xplayer, airplayer iptv....).
@@ -751,18 +855,138 @@ Nosotros proporcionamos la suscripción (tv, películas, series) (No proporciona
 
 Aquí encontrarás las credenciales de acceso para tu suscripción:
 
-FORMATO-XTREAM-CODES
-Domain:
-${domain}
-Username:
-${username}
-Password:
-${password}
+${credsBlock}
 
----Formato-Enlace-M3U
-${m3u}
+=>  ${translations.es.deviceLine(subs)} Nuestro soporte está disponible 24/7. ¡No dudes en hacernos preguntas y que disfrutes viendo!`
+    },
 
-=>  Puedes usar esta suscripción en dos o tres dispositivos, pero no simultáneamente. Nuestro soporte está disponible 24/7. ¡No dudes en hacernos preguntas y que disfrutes viendo!`
+    sv: {
+      langTitle:    'Språk / Language',
+      configTitle:  'Konfiguration',
+      periodeLabel: 'Period',
+      monthWord:    'månader',
+      subsLabel:    'Antal abonnemang',
+      subWord:   (n) => 'abonnemang',
+      deviceLine:(n) => n === 1
+        ? 'Du kan använda det här abonnemanget på en enhet.'
+        : `Du kan använda det här abonnemanget på ${n === 2 ? 'två' : 'tre'} enheter, men inte samtidigt.`,
+      xtreamLabel:    'XTREAM-CODES-FORMAT',
+      m3uFormatLabel: '---M3U-Länk-format',
+      subHeader:  (n) => `--- Abonnemang ${n} ---`,
+      m3uLabel:   'M3U-länk',
+      m3uLabel2:  'M3U-länk 2',
+      m3uLabel3:  'M3U-länk 3',
+      generateBtn: 'Generera meddelande',
+      outputLabel: 'Genererat meddelande',
+      copyText:    'Kopiera',
+      copiedText:  'Kopierat!',
+      footer:      'Lokalt verktyg — ingen data skickas',
+      errorEmpty:    'Ange M3U-länken.',
+      errorInvalid:  'Ogiltig M3U-länk. Kontrollera formatet.',
+      errorEmpty2:   'Ange den 2:a M3U-länken.',
+      errorEmpty3:   'Ange den 3:e M3U-länken.',
+      errorInvalid2: 'Ogiltig 2:a M3U-länk.',
+      errorInvalid3: 'Ogiltig 3:e M3U-länk.',
+      vipLabel:  (m) => `${m} månader VIP`,
+      monthLabel:(m) => `${m} månader`,
+      message: (label, expiry, credsBlock, subs) =>
+`Ditt abonnemang hos oss för ${label} har aktiverats: utgångsdatumet är ${expiry}
+
+Du kan använda våra abonnemang i olika app-spelare (iboplayer, hotplayer, smarters pro, ibo xplayer, airplayer iptv....).
+
+Vi levererar abonnemanget (tv, filmer, serier) (Vi levererar inte app-spelaren med abonnemanget.), inte app-spelaren!+++++.
+
+Här hittar du inloggningsuppgifterna för ditt abonnemang:
+
+${credsBlock}
+
+=>  ${translations.sv.deviceLine(subs)} Vår support finns tillgänglig 24/7. Tveka inte att ställa frågor och trevlig tittning!`
+    },
+
+    fr: {
+      langTitle:    'Langue / Language',
+      configTitle:  'Configuration',
+      periodeLabel: 'Période',
+      monthWord:    'mois',
+      subsLabel:    "Nombre d'abonnements",
+      subWord:   (n) => n === 1 ? 'abonnement' : 'abonnements',
+      deviceLine:(n) => n === 1
+        ? 'Vous pouvez utiliser cet abonnement sur un appareil.'
+        : `Vous pouvez utiliser cet abonnement sur ${n === 2 ? 'deux' : 'trois'} appareils, mais pas simultanément.`,
+      xtreamLabel:    'FORMAT-XTREAM-CODES',
+      m3uFormatLabel: '---Format-Lien-M3U',
+      subHeader:  (n) => `--- Abonnement ${n} ---`,
+      m3uLabel:   'Lien M3U',
+      m3uLabel2:  'Lien M3U 2',
+      m3uLabel3:  'Lien M3U 3',
+      generateBtn: 'Générer le message',
+      outputLabel: 'Message généré',
+      copyText:    'Copier',
+      copiedText:  'Copié !',
+      footer:      'Outil local — aucune donnée envoyée',
+      errorEmpty:    'Veuillez entrer le lien M3U.',
+      errorInvalid:  'Lien M3U invalide. Vérifiez le format.',
+      errorEmpty2:   'Veuillez entrer le 2e lien M3U.',
+      errorEmpty3:   'Veuillez entrer le 3e lien M3U.',
+      errorInvalid2: '2e lien M3U invalide.',
+      errorInvalid3: '3e lien M3U invalide.',
+      vipLabel:  (m) => `${m} mois VIP`,
+      monthLabel:(m) => `${m} mois`,
+      message: (label, expiry, credsBlock, subs) =>
+`Votre abonnement chez nous pour ${label} a été activé : la date d'expiration est ${expiry}
+
+Vous pouvez utiliser nos abonnements dans différents lecteurs d'applications (iboplayer, hotplayer, smarters pro, ibo xplayer, airplayer iptv....).
+
+Nous fournissons l'abonnement (tv, films, séries) (Nous ne fournissons pas le lecteur d'application avec l'abonnement.), pas le lecteur d'application !+++++.
+
+Voici vos identifiants de connexion pour votre abonnement :
+
+${credsBlock}
+
+=>  ${translations.fr.deviceLine(subs)} Notre support est disponible 24h/24 et 7j/7. N'hésitez pas à nous poser des questions et bonne vision !`
+    },
+
+    en: {
+      langTitle:    'Language',
+      configTitle:  'Configuration',
+      periodeLabel: 'Period',
+      monthWord:    'months',
+      subsLabel:    'Number of subscriptions',
+      subWord:   (n) => n === 1 ? 'subscription' : 'subscriptions',
+      deviceLine:(n) => n === 1
+        ? 'You can use this subscription on one device.'
+        : `You can use this subscription on ${n === 2 ? 'two' : 'three'} devices, but not simultaneously.`,
+      xtreamLabel:    'XTREAM-CODES-FORMAT',
+      m3uFormatLabel: '---M3U-Link-format',
+      subHeader:  (n) => `--- Subscription ${n} ---`,
+      m3uLabel:   'M3U Link',
+      m3uLabel2:  'M3U Link 2',
+      m3uLabel3:  'M3U Link 3',
+      generateBtn: 'Generate message',
+      outputLabel: 'Generated message',
+      copyText:    'Copy',
+      copiedText:  'Copied!',
+      footer:      'Local tool — no data is sent',
+      errorEmpty:    'Please enter the M3U link.',
+      errorInvalid:  'Invalid M3U link. Please check the format.',
+      errorEmpty2:   'Please enter the 2nd M3U link.',
+      errorEmpty3:   'Please enter the 3rd M3U link.',
+      errorInvalid2: 'Invalid 2nd M3U link.',
+      errorInvalid3: 'Invalid 3rd M3U link.',
+      vipLabel:  (m) => `${m} months VIP`,
+      monthLabel:(m) => `${m} months`,
+      message: (label, expiry, credsBlock, subs) =>
+`Your subscription with us for ${label} has been activated: the expiry date is ${expiry}
+
+You can use our subscriptions in various app players (iboplayer, hotplayer, smarters pro, ibo xplayer, airplayer iptv....).
+
+We provide the subscription (tv, movies, series) (We do not include the app player with the subscription.), not the app player!+++++.
+
+Here you will find the login details for your subscription:
+
+${credsBlock}
+
+=>  ${translations.en.deviceLine(subs)} Our support is available 24/7. Do not hesitate to ask us questions and enjoy watching!`
     }
   };
 
@@ -778,7 +1002,13 @@ ${m3u}
     document.getElementById('ui-lang-title').textContent    = t.langTitle;
     document.getElementById('ui-config-title').textContent  = t.configTitle;
     document.getElementById('ui-periode-label').textContent = t.periodeLabel;
+    document.getElementById('ui-subs-label').textContent    = t.subsLabel;
+    document.getElementById('s1-label').textContent         = t.subWord(1);
+    document.getElementById('s2-label').textContent         = t.subWord(2);
+    document.getElementById('s3-label').textContent         = t.subWord(3);
     document.getElementById('ui-m3u-label').textContent     = t.m3uLabel;
+    document.getElementById('ui-m3u2-label').textContent    = t.m3uLabel2;
+    document.getElementById('ui-m3u3-label').textContent    = t.m3uLabel3;
     document.getElementById('ui-generate-btn').textContent  = t.generateBtn;
     document.getElementById('ui-output-label').textContent  = t.outputLabel;
     document.getElementById('ui-copy-text').textContent     = t.copyText;
@@ -788,6 +1018,14 @@ ${m3u}
     document.getElementById('p12-label').textContent        = t.monthWord;
     document.getElementById('output-section').style.display = 'none';
     document.getElementById('error').style.display          = 'none';
+  }
+
+  function selectSubs(btn) {
+    document.querySelectorAll('.subs-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedSubs = parseInt(btn.dataset.subs);
+    document.getElementById('m3u2-field').style.display = selectedSubs >= 2 ? 'block' : 'none';
+    document.getElementById('m3u3-field').style.display = selectedSubs >= 3 ? 'block' : 'none';
   }
 
   function selectPeriode(btn) {
@@ -822,6 +1060,16 @@ ${m3u}
     return months === 15 ? t.vipLabel(15) : t.monthLabel(months);
   }
 
+  function buildCredsBlock(t, list) {
+    if (list.length === 1) {
+      const {domain, username, password, m3u} = list[0];
+      return `${t.xtreamLabel}\nDomain:\n${domain}\nUsername:\n${username}\nPassword:\n${password}\n\n${t.m3uFormatLabel}\n${m3u}`;
+    }
+    return list.map(({domain, username, password, m3u}, i) =>
+      `${t.subHeader(i + 1)}\n${t.xtreamLabel}\nDomain:\n${domain}\nUsername:\n${username}\nPassword:\n${password}\n\n${t.m3uFormatLabel}\n${m3u}`
+    ).join('\n\n');
+  }
+
   function showError(msg) {
     const el = document.getElementById('error');
     el.textContent    = msg;
@@ -834,16 +1082,36 @@ ${m3u}
 
   function generate() {
     hideError();
-    const t   = translations[selectedLang];
-    const m3u = document.getElementById('m3u').value.trim();
+    const t = translations[selectedLang];
 
-    if (!m3u) { showError(t.errorEmpty); return; }
+    const m3uVal = document.getElementById('m3u').value.trim();
+    if (!m3uVal) { showError(t.errorEmpty); return; }
+    const p1 = parseM3U(m3uVal);
+    if (!p1 || !p1.username) { showError(t.errorInvalid); return; }
+    p1.m3u = m3uVal;
 
-    const parsed = parseM3U(m3u);
-    if (!parsed || !parsed.username) { showError(t.errorInvalid); return; }
+    const list = [p1];
 
-    const { domain, username, password } = parsed;
-    const msg = t.message(getPeriodeLabel(selectedMonths), getExpiryDate(selectedMonths), domain, username, password, m3u);
+    if (selectedSubs >= 2) {
+      const m3u2Val = document.getElementById('m3u2').value.trim();
+      if (!m3u2Val) { showError(t.errorEmpty2); return; }
+      const p2 = parseM3U(m3u2Val);
+      if (!p2 || !p2.username) { showError(t.errorInvalid2); return; }
+      p2.m3u = m3u2Val;
+      list.push(p2);
+    }
+
+    if (selectedSubs >= 3) {
+      const m3u3Val = document.getElementById('m3u3').value.trim();
+      if (!m3u3Val) { showError(t.errorEmpty3); return; }
+      const p3 = parseM3U(m3u3Val);
+      if (!p3 || !p3.username) { showError(t.errorInvalid3); return; }
+      p3.m3u = m3u3Val;
+      list.push(p3);
+    }
+
+    const credsBlock = buildCredsBlock(t, list);
+    const msg = t.message(getPeriodeLabel(selectedMonths), getExpiryDate(selectedMonths), credsBlock, selectedSubs);
 
     document.getElementById('output').textContent = msg;
     const section = document.getElementById('output-section');
