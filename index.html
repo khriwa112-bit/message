@@ -757,6 +757,7 @@ footer {
         : `Je kunt dit abonnement op ${{2:'twee',3:'drie',4:'vier'}[n]} apparaten gebruiken, maar niet tegelijkertijd.`,
       xtreamLabel:    'XTREAM-CODES-FORMAAT',
       m3uFormatLabel: '---M3U-Link-formaat',
+      portalLabel:    '---PORTAL-LINK',
       subHeader:  (n) => `--- Abonnement ${n} ---`,
       m3uLabel:   'M3U Link',
       m3uLabel2:  'M3U Link 2',
@@ -803,6 +804,7 @@ ${credsBlock}
         : `Sie können dieses Abonnement auf ${{2:'zwei',3:'drei',4:'vier'}[n]} Geräten verwenden, aber nicht gleichzeitig.`,
       xtreamLabel:    'XTREAM-CODES-FORMAT',
       m3uFormatLabel: '---M3U-Link-Format',
+      portalLabel:    '---PORTAL-LINK',
       subHeader:  (n) => `--- Abonnement ${n} ---`,
       m3uLabel:   'M3U Link',
       m3uLabel2:  'M3U Link 2',
@@ -849,6 +851,7 @@ ${credsBlock}
         : `Puedes usar esta suscripción en ${{2:'dos',3:'tres',4:'cuatro'}[n]} dispositivos, pero no simultáneamente.`,
       xtreamLabel:    'FORMATO-XTREAM-CODES',
       m3uFormatLabel: '---Formato-Enlace-M3U',
+      portalLabel:    '---ENLACE-PORTAL',
       subHeader:  (n) => `--- Suscripción ${n} ---`,
       m3uLabel:   'Enlace M3U',
       m3uLabel2:  'Enlace M3U 2',
@@ -895,6 +898,7 @@ ${credsBlock}
         : `Du kan använda det här abonnemanget på ${{2:'två',3:'tre',4:'fyra'}[n]} enheter, men inte samtidigt.`,
       xtreamLabel:    'XTREAM-CODES-FORMAT',
       m3uFormatLabel: '---M3U-Länk-format',
+      portalLabel:    '---PORTAL-LÄNK',
       subHeader:  (n) => `--- Abonnemang ${n} ---`,
       m3uLabel:   'M3U-länk',
       m3uLabel2:  'M3U-länk 2',
@@ -941,6 +945,7 @@ ${credsBlock}
         : `Vous pouvez utiliser cet abonnement sur ${{2:'deux',3:'trois',4:'quatre'}[n]} appareils, mais pas simultanément.`,
       xtreamLabel:    'FORMAT-XTREAM-CODES',
       m3uFormatLabel: '---Format-Lien-M3U',
+      portalLabel:    '---LIEN-PORTAIL',
       subHeader:  (n) => `--- Abonnement ${n} ---`,
       m3uLabel:   'Lien M3U',
       m3uLabel2:  'Lien M3U 2',
@@ -987,6 +992,7 @@ ${credsBlock}
         : `You can use this subscription on ${{2:'two',3:'three',4:'four'}[n]} devices, but not simultaneously.`,
       xtreamLabel:    'XTREAM-CODES-FORMAT',
       m3uFormatLabel: '---M3U-Link-format',
+      portalLabel:    '---PORTAL-LINK',
       subHeader:  (n) => `--- Subscription ${n} ---`,
       m3uLabel:   'M3U Link',
       m3uLabel2:  'M3U Link 2',
@@ -1069,14 +1075,15 @@ ${credsBlock}
     selectedMonths = parseInt(btn.dataset.months);
   }
 
-  function parseM3U(url) {
+  function parseLink(url) {
     try {
       const u = new URL(url.trim());
-      return {
-        domain:   u.hostname,
-        username: u.searchParams.get('username') || '',
-        password: u.searchParams.get('password') || ''
-      };
+      const username = u.searchParams.get('username') || '';
+      const password = u.searchParams.get('password') || '';
+      if (username) {
+        return { type: 'm3u', domain: u.hostname, username, password };
+      }
+      return { type: 'portal', domain: u.hostname };
     } catch { return null; }
   }
 
@@ -1095,13 +1102,17 @@ ${credsBlock}
     return months === 15 ? t.vipLabel(15) : t.monthLabel(months);
   }
 
-  function buildCredsBlock(t, list) {
-    if (list.length === 1) {
-      const {domain, username, password, m3u} = list[0];
-      return `${t.xtreamLabel}\nDomain:\n${domain}\nUsername:\n${username}\nPassword:\n${password}\n\n${t.m3uFormatLabel}\n${m3u}`;
+  function formatItem(t, item) {
+    if (item.type === 'portal') {
+      return `${t.portalLabel}\n${item.url}`;
     }
-    return list.map(({domain, username, password, m3u}, i) =>
-      `${t.subHeader(i + 1)}\n${t.xtreamLabel}\nDomain:\n${domain}\nUsername:\n${username}\nPassword:\n${password}\n\n${t.m3uFormatLabel}\n${m3u}`
+    return `${t.xtreamLabel}\nDomain:\n${item.domain}\nUsername:\n${item.username}\nPassword:\n${item.password}\n\n${t.m3uFormatLabel}\n${item.url}`;
+  }
+
+  function buildCredsBlock(t, list) {
+    if (list.length === 1) return formatItem(t, list[0]);
+    return list.map((item, i) =>
+      `${t.subHeader(i + 1)}\n${formatItem(t, item)}`
     ).join('\n\n');
   }
 
@@ -1121,36 +1132,36 @@ ${credsBlock}
 
     const m3uVal = document.getElementById('m3u').value.trim();
     if (!m3uVal) { showError(t.errorEmpty); return; }
-    const p1 = parseM3U(m3uVal);
-    if (!p1 || !p1.username) { showError(t.errorInvalid); return; }
-    p1.m3u = m3uVal;
+    const p1 = parseLink(m3uVal);
+    if (!p1) { showError(t.errorInvalid); return; }
+    p1.url = m3uVal;
 
     const list = [p1];
 
     if (selectedSubs >= 2) {
       const m3u2Val = document.getElementById('m3u2').value.trim();
       if (!m3u2Val) { showError(t.errorEmpty2); return; }
-      const p2 = parseM3U(m3u2Val);
-      if (!p2 || !p2.username) { showError(t.errorInvalid2); return; }
-      p2.m3u = m3u2Val;
+      const p2 = parseLink(m3u2Val);
+      if (!p2) { showError(t.errorInvalid2); return; }
+      p2.url = m3u2Val;
       list.push(p2);
     }
 
     if (selectedSubs >= 3) {
       const m3u3Val = document.getElementById('m3u3').value.trim();
       if (!m3u3Val) { showError(t.errorEmpty3); return; }
-      const p3 = parseM3U(m3u3Val);
-      if (!p3 || !p3.username) { showError(t.errorInvalid3); return; }
-      p3.m3u = m3u3Val;
+      const p3 = parseLink(m3u3Val);
+      if (!p3) { showError(t.errorInvalid3); return; }
+      p3.url = m3u3Val;
       list.push(p3);
     }
 
     if (selectedSubs >= 4) {
       const m3u4Val = document.getElementById('m3u4').value.trim();
       if (!m3u4Val) { showError(t.errorEmpty4); return; }
-      const p4 = parseM3U(m3u4Val);
-      if (!p4 || !p4.username) { showError(t.errorInvalid4); return; }
-      p4.m3u = m3u4Val;
+      const p4 = parseLink(m3u4Val);
+      if (!p4) { showError(t.errorInvalid4); return; }
+      p4.url = m3u4Val;
       list.push(p4);
     }
 
