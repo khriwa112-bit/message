@@ -789,6 +789,14 @@ Hier vindt u de inloggegevens voor uw abonnement:
 
 ${credsBlock}
 
+=>  ${translations.nl.deviceLine(subs)} Onze support staat 24/7 voor je klaar. Aarzel niet om ons vragen te stellen en veel kijkplezier!`,
+      portalMessage: (label, expiry, credsBlock, subs) =>
+`Je abonnement bij ons voor ${label} is geactiveerd: de vervaldatum is ${expiry}
+
+Hier vindt u de inloggegevens voor uw abonnement:
+
+${credsBlock}
+
 =>  ${translations.nl.deviceLine(subs)} Onze support staat 24/7 voor je klaar. Aarzel niet om ons vragen te stellen en veel kijkplezier!`
     },
 
@@ -831,6 +839,14 @@ ${credsBlock}
 Sie können unsere Abonnements in verschiedenen App-Playern verwenden (iboplayer, hotplayer, smarters pro, ibo xplayer, airplayer iptv....).
 
 Wir liefern das Abonnement (TV, Filme, Serien) (Wir liefern den App-Player nicht mit dem Abonnement.) , nicht den App-Player !+++++.
+
+Hier finden Sie die Anmeldedaten für Ihr Abonnement:
+
+${credsBlock}
+
+=>  ${translations.de.deviceLine(subs)} Unser Support ist 24/7 für Sie da. Zögern Sie nicht, uns Fragen zu stellen und viel Spaß beim Schauen!`,
+      portalMessage: (label, expiry, credsBlock, subs) =>
+`Ihr Abonnement bei uns für ${label} wurde aktiviert: Das Ablaufdatum ist ${expiry}
 
 Hier finden Sie die Anmeldedaten für Ihr Abonnement:
 
@@ -883,6 +899,14 @@ Aquí encontrarás las credenciales de acceso para tu suscripción:
 
 ${credsBlock}
 
+=>  ${translations.es.deviceLine(subs)} Nuestro soporte está disponible 24/7. ¡No dudes en hacernos preguntas y que disfrutes viendo!`,
+      portalMessage: (label, expiry, credsBlock, subs) =>
+`Tu suscripción con nosotros por ${label} ha sido activada: la fecha de vencimiento es ${expiry}
+
+Aquí encontrarás las credenciales de acceso para tu suscripción:
+
+${credsBlock}
+
 =>  ${translations.es.deviceLine(subs)} Nuestro soporte está disponible 24/7. ¡No dudes en hacernos preguntas y que disfrutes viendo!`
     },
 
@@ -925,6 +949,14 @@ ${credsBlock}
 Du kan använda våra abonnemang i olika app-spelare (iboplayer, hotplayer, smarters pro, ibo xplayer, airplayer iptv....).
 
 Vi levererar abonnemanget (tv, filmer, serier) (Vi levererar inte app-spelaren med abonnemanget.), inte app-spelaren!+++++.
+
+Här hittar du inloggningsuppgifterna för ditt abonnemang:
+
+${credsBlock}
+
+=>  ${translations.sv.deviceLine(subs)} Vår support finns tillgänglig 24/7. Tveka inte att ställa frågor och trevlig tittning!`,
+      portalMessage: (label, expiry, credsBlock, subs) =>
+`Ditt abonnemang hos oss för ${label} har aktiverats: utgångsdatumet är ${expiry}
 
 Här hittar du inloggningsuppgifterna för ditt abonnemang:
 
@@ -977,6 +1009,14 @@ Voici vos identifiants de connexion pour votre abonnement :
 
 ${credsBlock}
 
+=>  ${translations.fr.deviceLine(subs)} Notre support est disponible 24h/24 et 7j/7. N'hésitez pas à nous poser des questions et bonne vision !`,
+      portalMessage: (label, expiry, credsBlock, subs) =>
+`Votre abonnement chez nous pour ${label} a été activé : la date d'expiration est ${expiry}
+
+Voici vos identifiants de connexion pour votre abonnement :
+
+${credsBlock}
+
 =>  ${translations.fr.deviceLine(subs)} Notre support est disponible 24h/24 et 7j/7. N'hésitez pas à nous poser des questions et bonne vision !`
     },
 
@@ -1019,6 +1059,14 @@ ${credsBlock}
 You can use our subscriptions in various app players (iboplayer, hotplayer, smarters pro, ibo xplayer, airplayer iptv....).
 
 We provide the subscription (tv, movies, series) (We do not include the app player with the subscription.), not the app player!+++++.
+
+Here you will find the login details for your subscription:
+
+${credsBlock}
+
+=>  ${translations.en.deviceLine(subs)} Our support is available 24/7. Do not hesitate to ask us questions and enjoy watching!`,
+      portalMessage: (label, expiry, credsBlock, subs) =>
+`Your subscription with us for ${label} has been activated: the expiry date is ${expiry}
 
 Here you will find the login details for your subscription:
 
@@ -1166,7 +1214,9 @@ ${credsBlock}
     }
 
     const credsBlock = buildCredsBlock(t, list);
-    const msg = t.message(getPeriodeLabel(selectedMonths), getExpiryDate(selectedMonths), credsBlock, selectedSubs);
+    const isPortal = list[0].type === 'portal';
+    const msgFn = isPortal ? t.portalMessage : t.message;
+    const msg = msgFn(getPeriodeLabel(selectedMonths), getExpiryDate(selectedMonths), credsBlock, selectedSubs);
 
     document.getElementById('output').textContent = msg;
     const section = document.getElementById('output-section');
