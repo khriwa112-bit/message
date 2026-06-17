@@ -754,7 +754,7 @@ footer {
       subWord:   (n) => n === 1 ? 'abonnement' : 'abonnementen',
       deviceLine:(n) => n === 1
         ? 'Je kunt dit abonnement op één apparaat gebruiken.'
-        : `Je kunt dit abonnement op ${{2:'twee',3:'drie',4:'vier'}[n]} apparaten gebruiken, maar niet tegelijkertijd.`,
+        : `Dit abonnement is voor ${n} apparaten.`,
       xtreamLabel:    'XTREAM-CODES-FORMAAT',
       m3uFormatLabel: '---M3U-Link-formaat',
       portalLabel:    '---PORTAL-LINK',
@@ -809,7 +809,7 @@ ${credsBlock}
       subWord:   (n) => n === 1 ? 'Abonnement' : 'Abonnements',
       deviceLine:(n) => n === 1
         ? 'Sie können dieses Abonnement auf einem Gerät verwenden.'
-        : `Sie können dieses Abonnement auf ${{2:'zwei',3:'drei',4:'vier'}[n]} Geräten verwenden, aber nicht gleichzeitig.`,
+        : `Dieses Abonnement ist für ${n} Geräte.`,
       xtreamLabel:    'XTREAM-CODES-FORMAT',
       m3uFormatLabel: '---M3U-Link-Format',
       portalLabel:    '---PORTAL-LINK',
@@ -864,7 +864,7 @@ ${credsBlock}
       subWord:   (n) => n === 1 ? 'suscripción' : 'suscripciones',
       deviceLine:(n) => n === 1
         ? 'Puedes usar esta suscripción en un dispositivo.'
-        : `Puedes usar esta suscripción en ${{2:'dos',3:'tres',4:'cuatro'}[n]} dispositivos, pero no simultáneamente.`,
+        : `Esta suscripción es para ${n} dispositivos.`,
       xtreamLabel:    'FORMATO-XTREAM-CODES',
       m3uFormatLabel: '---Formato-Enlace-M3U',
       portalLabel:    '---ENLACE-PORTAL',
@@ -919,7 +919,7 @@ ${credsBlock}
       subWord:   (n) => 'abonnemang',
       deviceLine:(n) => n === 1
         ? 'Du kan använda det här abonnemanget på en enhet.'
-        : `Du kan använda det här abonnemanget på ${{2:'två',3:'tre',4:'fyra'}[n]} enheter, men inte samtidigt.`,
+        : `Det här abonnemanget är för ${n} enheter.`,
       xtreamLabel:    'XTREAM-CODES-FORMAT',
       m3uFormatLabel: '---M3U-Länk-format',
       portalLabel:    '---PORTAL-LÄNK',
@@ -974,7 +974,7 @@ ${credsBlock}
       subWord:   (n) => n === 1 ? 'abonnement' : 'abonnements',
       deviceLine:(n) => n === 1
         ? 'Vous pouvez utiliser cet abonnement sur un appareil.'
-        : `Vous pouvez utiliser cet abonnement sur ${{2:'deux',3:'trois',4:'quatre'}[n]} appareils, mais pas simultanément.`,
+        : `Cet abonnement est pour ${n} appareils.`,
       xtreamLabel:    'FORMAT-XTREAM-CODES',
       m3uFormatLabel: '---Format-Lien-M3U',
       portalLabel:    '---LIEN-PORTAIL',
@@ -1029,7 +1029,7 @@ ${credsBlock}
       subWord:   (n) => n === 1 ? 'subscription' : 'subscriptions',
       deviceLine:(n) => n === 1
         ? 'You can use this subscription on one device.'
-        : `You can use this subscription on ${{2:'two',3:'three',4:'four'}[n]} devices, but not simultaneously.`,
+        : `This subscription is for ${n} devices.`,
       xtreamLabel:    'XTREAM-CODES-FORMAT',
       m3uFormatLabel: '---M3U-Link-format',
       portalLabel:    '---PORTAL-LINK',
